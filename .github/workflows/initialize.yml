@@ -1,0 +1,23 @@
+name: Initialize
+
+on: push
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 21
+      - run: git pull
+
+      - name: Run replace-all-words
+        run: npx replace-all-words ./ template-typescript $(echo ${{ github.repository }} | cut -d'/' -f2)
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'autogen: replace template with repository name and remove initialize'
